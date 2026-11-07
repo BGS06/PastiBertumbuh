@@ -1,169 +1,76 @@
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { Zap, CalendarDays, Bell, Users, Sparkles, Check, ArrowRight } from 'lucide-react'
+import { ArrowRight, BookOpen, Heart, Activity, CheckCircle } from 'lucide-react'
 
-const pricingPlans = [
-  {
-    id: 'gratis',
-    name: 'Gratis',
-    price: 'Rp 0',
-    period: '/bulan',
-    description: 'Cocok untuk mencoba fitur dasar dan acara berskala kecil.',
-    features: ['1 Acara Aktif', 'Maksimal 50 Tamu', 'Pengingat Standar', 'Tema Dasar'],
-    buttonText: 'Mulai Gratis',
-    popular: false,
-  },
-  {
-    id: 'pro',
-    name: 'Pro',
-    price: 'Rp 49.000',
-    period: '/bulan',
-    description: 'Ideal untuk manajemen acara profesional dan to-do list harian.',
-    features: ['Acara Tidak Terbatas', 'Tamu Tidak Terbatas', 'Pengingat WhatsApp', 'Kustomisasi Tautan'],
-    buttonText: 'Pilih Paket Pro',
-    popular: true,
-  },
-  {
-    id: 'bisnis',
-    name: 'Bisnis',
-    price: 'Rp 149.000',
-    period: '/bulan',
-    description: 'Untuk tim dengan kebutuhan kustomisasi penuh.',
-    features: ['Semua Fitur Pro', 'Manajemen Tim', 'Laporan & Analitik', 'Prioritas Dukungan CS'],
-    buttonText: 'Hubungi Kami',
-    popular: false,
-  },
-]
-
-export default function LandingPage() {
+export default function Home() {
   return (
-    <div className="min-h-screen bg-slate-50 font-sans antialiased selection:bg-purple-200">
-      
-      {/* NAVBAR */}
-      <nav className="fixed top-0 inset-x-0 h-16 bg-white/80 backdrop-blur-md border-b border-slate-200 z-50 flex items-center justify-between px-6 md:px-12">
-        <div className="flex items-center gap-2">
-          <Zap className="text-purple-600 fill-purple-600" size={24} />
-          <span className="text-xl font-bold text-slate-900 tracking-tight">PastiBertumbuh</span>
+    <div className="min-h-screen bg-[#FDFCF8] flex">
+      {/* Kolom Kiri: Teks dan CTA */}
+      <div className="flex-1 flex flex-col justify-center px-12 md:px-24 lg:px-32 py-12 relative z-10">
+        
+        {/* Label Atas */}
+        <div className="inline-flex items-center gap-2 bg-[#EFECE3] text-[#4A5D4E] px-4 py-1.5 rounded-full text-sm font-semibold mb-8 w-fit">
+          <BookOpen size={16} />
+          <span>PastiBertumbuh Hub</span>
         </div>
-        <div className="flex items-center gap-4">
-          <Link href="/login" className="text-sm font-semibold text-slate-600 hover:text-slate-900 transition-colors">
-            Masuk
-          </Link>
-          <Link href="/register">
-            <Button className="rounded-full bg-purple-600 hover:bg-purple-700 text-white px-5 h-9 text-sm">
-              Daftar Gratis
-            </Button>
-          </Link>
-        </div>
-      </nav>
 
-      {/* HERO SECTION */}
-      <section className="pt-32 pb-20 px-6 text-center max-w-5xl mx-auto space-y-8">
-        <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-slate-900 leading-tight">
-          Kelola Acara & Waktu <br className="hidden md:block" />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600">
-            Tanpa Beban Pikiran
-          </span>
+        {/* Hero Text */}
+        <h1 className="text-6xl md:text-7xl font-serif text-[#1F2937] leading-[1.1] tracking-tight mb-6">
+          Personal<br />Growth
         </h1>
-        <p className="text-lg md:text-xl text-slate-500 max-w-2xl mx-auto font-medium">
-          Platform all-in-one untuk manajemen undangan, pelacakan tamu, dan pengingat otomatis agar hidupmu lebih tertata.
+        <p className="text-xl md:text-2xl text-[#4B5563] mb-8 font-medium">
+          Mindset. Habits. Confidence. <span className="font-serif italic text-[#4A5D4E]">You.</span>
         </p>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-          <Link href="/register">
-            <Button className="h-14 px-8 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-base font-semibold w-full sm:w-auto shadow-xl shadow-slate-900/20">
-              Mulai Sekarang <ArrowRight className="ml-2" size={18} />
-            </Button>
+
+        <p className="text-[#6B7280] text-lg max-w-md mb-12 leading-relaxed">
+          Platform produktivitas dan keuangan lengkap untuk membantumu membangun kebiasaan sehat, mengelola uang, dan membuka potensi terbaikmu.
+        </p>
+
+        {/* Tombol Aksi */}
+        <div className="flex flex-col sm:flex-row gap-4 mb-16">
+          <Link href="/register" className="inline-flex items-center justify-center gap-2 bg-[#4A5D4E] hover:bg-[#3d4d40] text-white px-8 py-4 rounded-lg font-medium transition-all shadow-sm">
+            Mulai Perjalanan <ArrowRight size={18} />
           </Link>
-          <Link href="#pricing">
-            <Button variant="outline" className="h-14 px-8 rounded-full border-slate-300 text-slate-700 hover:bg-slate-100 text-base font-semibold w-full sm:w-auto">
-              Lihat Harga
-            </Button>
+          <Link href="/dashboard" className="inline-flex items-center justify-center gap-2 bg-white border border-[#E5E7EB] hover:border-[#4A5D4E] hover:text-[#4A5D4E] text-[#374151] px-8 py-4 rounded-lg font-medium transition-all shadow-sm">
+            <Activity size={18} /> Buka Dasbor
           </Link>
         </div>
-      </section>
 
-      {/* PRICING SECTION */}
-      <section id="pricing" className="py-24 px-6 bg-white border-t border-slate-100">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center space-y-4 mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-slate-900">
-              Harga Transparan, Sesuai Kebutuhan
-            </h2>
-            <p className="text-lg text-slate-500 max-w-2xl mx-auto">
-              Mulai gratis, tingkatkan kapan saja. Tidak ada biaya tersembunyi.
-            </p>
+        {/* Fitur Bawah (4 Kolom Mini) */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-2xl border-t border-[#EFECE3] pt-8">
+          <div>
+            <CheckCircle className="text-[#4A5D4E] mb-3" size={24} />
+            <h4 className="font-semibold text-[#1F2937] mb-1">Catatan Keuangan</h4>
+            <p className="text-sm text-[#6B7280]">Lacak saldo & anggaran</p>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center max-w-5xl mx-auto">
-            {pricingPlans.map((plan) => (
-              <Card 
-                key={plan.id} 
-                className={`relative rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-2xl ${
-                  plan.popular 
-                    ? 'bg-slate-900 text-white shadow-xl scale-100 md:scale-105 z-10 border-slate-800' 
-                    : 'bg-white border-slate-200'
-                }`}
-              >
-                {plan.popular && (
-                  <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-purple-500 to-blue-500"></div>
-                )}
-                <CardContent className="p-8">
-                  {plan.popular && (
-                    <div className="mb-4 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 text-xs font-bold uppercase tracking-wider">
-                      <Sparkles size={14} /> Paling Populer
-                    </div>
-                  )}
-                  <h3 className={`text-xl font-bold ${plan.popular ? 'text-white' : 'text-slate-800'}`}>
-                    {plan.name}
-                  </h3>
-                  <div className="mt-4 flex items-baseline">
-                    <span className="text-4xl font-extrabold tracking-tight">{plan.price}</span>
-                    <span className={`ml-1 text-sm font-medium ${plan.popular ? 'text-slate-400' : 'text-slate-500'}`}>
-                      {plan.period}
-                    </span>
-                  </div>
-                  <p className={`mt-4 text-sm h-10 ${plan.popular ? 'text-slate-400' : 'text-slate-500'}`}>
-                    {plan.description}
-                  </p>
-                  
-                  <ul className="mt-8 space-y-4">
-                    {plan.features.map((feature, idx) => (
-                      <li key={idx} className="flex items-start gap-3">
-                        <div className={`shrink-0 w-5 h-5 rounded-full flex items-center justify-center mt-0.5 ${
-                          plan.popular ? 'bg-purple-500/20' : 'bg-purple-100'
-                        }`}>
-                          <Check size={12} className={plan.popular ? 'text-purple-400 stroke-[3]' : 'text-purple-600 stroke-[3]'} />
-                        </div>
-                        <span className={`text-sm font-medium ${plan.popular ? 'text-slate-300' : 'text-slate-700'}`}>
-                          {feature}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <Link href="/register">
-                    <Button 
-                      className={`w-full mt-8 h-12 rounded-full font-semibold transition-all ${
-                        plan.popular 
-                          ? 'bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white border-0' 
-                          : 'bg-slate-100 hover:bg-slate-200 text-slate-800 border-0'
-                      }`}
-                    >
-                      {plan.buttonText}
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
-            ))}
+          <div>
+            <Activity className="text-[#4A5D4E] mb-3" size={24} />
+            <h4 className="font-semibold text-[#1F2937] mb-1">Produktivitas</h4>
+            <p className="text-sm text-[#6B7280]">Kelola tugas harian</p>
+          </div>
+          <div>
+            <Heart className="text-[#4A5D4E] mb-3" size={24} />
+            <h4 className="font-semibold text-[#1F2937] mb-1">Pengingat Pro</h4>
+            <p className="text-sm text-[#6B7280]">Notifikasi pagi & sore</p>
+          </div>
+          <div>
+            <BookOpen className="text-[#4A5D4E] mb-3" size={24} />
+            <h4 className="font-semibold text-[#1F2937] mb-1">Premium AI</h4>
+            <p className="text-sm text-[#6B7280]">Scan struk otomatis</p>
           </div>
         </div>
-      </section>
 
-      {/* FOOTER */}
-      <footer className="border-t border-slate-200 bg-slate-50 py-10 text-center text-slate-500 text-sm">
-        <p>&copy; {new Date().getFullYear()} PastiBertumbuh. All rights reserved.</p>
-      </footer>
+      </div>
+
+      {/* Kolom Kanan: Gambar Penuh */}
+      <div className="hidden lg:block w-[45%] relative bg-[#EFECE3]">
+        {/* Placeholder untuk foto wanita membaca buku seperti referensi */}
+        <img 
+          src="/placeholder-hero.jpg" 
+          alt="Personal Growth Lifestyle" 
+          className="absolute inset-0 w-full h-full object-cover opacity-90 mix-blend-multiply"
+        />
+        {/* Kamu perlu menambahkan foto aslimu (misal bernama placeholder-hero.jpg) ke dalam folder 'public' Next.js */}
+      </div>
     </div>
   )
 }

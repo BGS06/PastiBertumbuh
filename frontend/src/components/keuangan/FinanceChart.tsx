@@ -1,18 +1,18 @@
 'use client'
-
 import React from 'react'
 
+// Skema Warna Earth Tone untuk Grafik
 const CATEGORIES_CONFIG = [
-  { name: 'Konsumsi', color: '#3b82f6' },   // Biru
-  { name: 'Transportasi', color: '#eab308' },// Kuning/Emas
-  { name: 'Tagihan', color: '#ef4444' },     // Merah
-  { name: 'Bisnis', color: '#22c55e' },      // Hijau
-  { name: 'Hiburan', color: '#facc15' },     // Kuning Terang
-  { name: 'Pendidikan', color: '#06b6d4' },  // Cyan
-  { name: 'Kesehatan', color: '#60a5fa' },   // Biru Muda
+  { name: 'Konsumsi', color: '#4A5D4E' }, // Sage Green
+  { name: 'Transportasi', color: '#8C7A6B' }, // Terakota/Coklat Muted
+  { name: 'Tagihan', color: '#64748B' }, // Slate Muted
+  { name: 'Bisnis', color: '#D4A373' }, // Earthy Orange/Khaki
+  { name: 'Hiburan', color: '#BCA89F' }, // Warm Grey
+  { name: 'Pendidikan', color: '#718096' }, // Cool Grey
+  { name: 'Kesehatan', color: '#9CA3AF' }, // Light Grey
 ]
 
-export default function FinanceChart({ rawData }: { rawData: any[] }) {
+export default function FinanceChart({ rawData }: { rawData?: any[] }) {
   const categoryTotals: Record<string, number> = {
     Konsumsi: 0,
     Transportasi: 0,
@@ -27,11 +27,12 @@ export default function FinanceChart({ rawData }: { rawData: any[] }) {
 
   if (Array.isArray(rawData) && rawData.length > 1) {
     const headers = rawData[0].map((h: any) => String(h || '').trim().toLowerCase())
-
+    
     let keluarIdx = headers.findIndex((h: string) => h.includes('keluar') || h.includes('pengeluaran'))
     let anggaranIdx = headers.findIndex((h: string) => h.includes('anggaran') || h.includes('kategori'))
     let keteranganIdx = headers.findIndex((h: string) => h.includes('keterangan'))
 
+    // Fallback index kolom berdasarkan struktur spreadsheet
     if (keluarIdx === -1) keluarIdx = 4
     if (anggaranIdx === -1) anggaranIdx = 5
     if (keteranganIdx === -1) keteranganIdx = 1
@@ -53,13 +54,11 @@ export default function FinanceChart({ rawData }: { rawData: any[] }) {
 
       const categoryFromAnggaran = String(row[anggaranIdx] || '').trim()
       const categoryFromKeterangan = String(row[keteranganIdx] || '').trim()
-
+      
       let targetCategory = ''
 
       const matchedCategory = CATEGORIES_CONFIG.find(
-        (c) => 
-          c.name.toLowerCase() === categoryFromAnggaran.toLowerCase() ||
-          categoryFromAnggaran.toLowerCase().includes(c.name.toLowerCase())
+        (c) => c.name.toLowerCase() === categoryFromAnggaran.toLowerCase() || categoryFromAnggaran.toLowerCase().includes(c.name.toLowerCase())
       )
 
       if (matchedCategory) {
@@ -92,105 +91,107 @@ export default function FinanceChart({ rawData }: { rawData: any[] }) {
   const maxVal = Math.max(...Object.values(categoryTotals), 100000)
   const yTicks = [maxVal, maxVal * 0.75, maxVal * 0.5, maxVal * 0.25]
 
+  // Tampilkan SEMUA kategori, meskipun 0, agar selaras dengan nama di bawahnya
+  const activeCategories = CATEGORIES_CONFIG
+
   return (
-    <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm flex flex-col gap-6 w-full h-full">
+    <div className="flex flex-col h-full w-full">
       {/* Header Kartu */}
-      <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-        <div>
-          <h3 className="text-lg font-bold text-slate-800">Aktivitas & Kategori Pengeluaran</h3>
-          <p className="text-xs text-slate-400 mt-0.5">Ringkasan alokasi dana dari Riwayat Transaksi</p>
-        </div>
-        <div className="text-right">
-          <span className="text-xs text-slate-400 font-medium">Total Pengeluaran</span>
-          <p className="text-base font-extrabold text-red-500">{formatRupiah(totalPengeluaran)}</p>
-        </div>
+      <div className="mb-6 flex justify-between items-end">
+          <div>
+            <h3 className="text-lg font-serif font-bold text-[#1F2937]">Pengeluaran Bulanan</h3>
+            <p className="text-[13px] text-[#6B7280]">Berdasarkan kategori riwayat transaksi</p>
+          </div>
+          <div className="text-right">
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Total</p>
+              <p className="text-xl font-extrabold text-red-500">{formatRupiah(totalPengeluaran)}</p>
+          </div>
       </div>
 
-      {/* DIAGRAM BATANG (DESAIN SESUAI REFERENSI GAMBAR) */}
-      <div className="border border-slate-200 rounded-lg p-4 bg-white flex flex-col gap-4">
-        {/* Legenda Kategori di Atas */}
-        <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs font-semibold text-slate-700 pb-2">
-          {CATEGORIES_CONFIG.map((cat) => (
-            <div key={cat.name} className="flex items-center gap-1.5">
-              <span className="w-3 h-3 rounded-sm inline-block" style={{ backgroundColor: cat.color }} />
-              <span>{cat.name}</span>
-            </div>
-          ))}
-        </div>
-
-        {/* Area Grafik dengan Gridline Horizontal */}
-        <div className="relative h-60 w-full pt-4 pb-1 flex flex-col justify-between border-t border-b border-slate-200">
-          {/* Garis Grid Nominal Y-Axis */}
-          <div className="absolute inset-0 flex flex-col justify-between pointer-events-none py-2">
-            {yTicks.map((tick, i) => (
-              <div key={i} className="relative w-full border-b border-slate-100 flex items-center">
-                <span className="absolute -top-3 left-0 bg-white/90 px-1 text-[10px] font-medium text-slate-400">
+      {/* DIAGRAM BATANG */}
+      {/* PERBAIKAN: Memberikan min-height tetap dan relative positioning yang kuat */}
+      <div className="relative min-h-[220px] w-full mt-4 flex items-end justify-between pb-8">
+          
+          {/* Garis Grid Horizontal & Y-Axis */}
+          <div className="absolute inset-0 flex flex-col justify-between pb-8 z-0 pointer-events-none">
+              {yTicks.map((tick, i) => (
+              <div key={i} className="relative w-full border-t border-[#EFECE3] border-dashed">
+                  <span className="absolute -top-3 left-0 text-[10px] text-[#9CA3AF] bg-white pr-2">
                   {formatRupiah(tick)}
-                </span>
+                  </span>
               </div>
-            ))}
+              ))}
+              <div className="relative w-full border-t border-[#EFECE3]">
+                  <span className="absolute -top-3 left-0 text-[10px] text-[#9CA3AF] bg-white pr-2">Rp 0</span>
+              </div>
           </div>
 
           {/* Batang Diagram */}
-          <div className="relative z-10 h-full flex items-end justify-around pl-16 pr-2">
-            {CATEGORIES_CONFIG.map((cat) => {
-              const amount = categoryTotals[cat.name] || 0
-              const heightPercent = maxVal > 0 ? (amount / maxVal) * 100 : 0
-
-              return (
-                <div key={cat.name} className="flex flex-col items-center h-full justify-end group relative w-6 md:w-8">
-                  {/* Tooltip Angka saat kursor di-hover */}
-                  {amount > 0 && (
-                    <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute -top-8 bg-slate-800 text-white text-[10px] py-1 px-2 rounded shadow whitespace-nowrap z-20">
-                      {cat.name}: {formatRupiah(amount)}
+          {/* PERBAIKAN: Mengatur height 100% dari container dan memposisikan batang di bawah */}
+          <div className="absolute inset-0 pb-8 pl-16 z-10 w-full h-full flex items-end justify-around">
+              {activeCategories.map((cat) => {
+                const amount = categoryTotals[cat.name] || 0
+                const heightPercent = maxVal > 0 ? (amount / maxVal) * 100 : 0
+                
+                return (
+                    // Container batang diatur full height untuk layouting
+                    <div key={cat.name} className="relative h-full flex flex-col justify-end items-center group w-12 cursor-pointer">
+                    
+                      {/* Tooltip */}
+                      <div className="absolute -top-8 opacity-0 group-hover:opacity-100 transition-opacity bg-[#1F2937] text-white text-[11px] px-2 py-1 rounded shadow-lg whitespace-nowrap z-20 pointer-events-none">
+                          <span className="font-bold">{cat.name}</span><br />
+                          {formatRupiah(amount)}
+                      </div>
+                      
+                      {/* Bar (Batang Grafik) */}
+                      {/* PERBAIKAN: Menambahkan min-height agar tidak lenyap jika nilainya kecil */}
+                      <div 
+                          className="w-6 md:w-8 rounded-t-md transition-all duration-700 ease-out hover:brightness-110"
+                          style={{ 
+                              height: amount > 0 ? `${Math.max(heightPercent, 2)}%` : '0%', 
+                              backgroundColor: cat.color,
+                          }}
+                      />
+                      
+                      {/* Label Bawah */}
+                      <span className="absolute -bottom-6 text-[10px] font-medium text-[#6B7280] truncate w-16 text-center">
+                          {cat.name}
+                      </span>
                     </div>
-                  )}
-
-                  {/* Batang */}
-                  <div
-                    className="w-full rounded-t transition-all duration-500"
-                    style={{
-                      height: `${Math.max(heightPercent, amount > 0 ? 3 : 0)}%`,
-                      backgroundColor: cat.color,
-                    }}
-                  />
-                </div>
-              )
-            })}
+                )
+              })}
           </div>
-        </div>
       </div>
 
-      {/* Progress Bar Penggolongan Kategori di Bawah */}
-      <div className="space-y-3 overflow-y-auto max-h-[200px] pr-1">
-        <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Penggolongan Kategori</h4>
-        {CATEGORIES_CONFIG.map((cat) => {
-          const amount = categoryTotals[cat.name] || 0
-          const percentage = totalPengeluaran > 0 ? Math.round((amount / totalPengeluaran) * 100) : 0
+      {/* Progress Bar Persentase Kategori di Bawah */}
+      <div className="mt-10 pt-4 border-t border-[#EFECE3]">
+          <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-3">Distribusi Pengeluaran</h4>
+          <div className="space-y-3">
+              {activeCategories.map((cat) => {
+                  const amount = categoryTotals[cat.name] || 0
+                  // Jangan render progress bar untuk kategori yang 0 jika tidak diinginkan (opsional)
+                  if (amount === 0) return null;
 
-          return (
-            <div key={cat.name} className="flex flex-col gap-1.5 p-2 rounded-xl hover:bg-slate-50/80 transition-colors">
-              <div className="flex items-center justify-between text-xs">
-                <div className="flex items-center gap-2.5">
-                  <span className="w-3 h-3 rounded-sm" style={{ backgroundColor: cat.color }} />
-                  <span className="font-semibold text-slate-700">{cat.name}</span>
-                </div>
-                <div className="text-right">
-                  <span className="font-bold text-slate-800">{formatRupiah(amount)}</span>
-                  <span className="text-[10px] text-slate-400 ml-1.5 font-medium">({percentage}%)</span>
-                </div>
-              </div>
-
-              <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                <div 
-                  className="h-full transition-all duration-500 rounded-full" 
-                  style={{ width: `${Math.min(percentage, 100)}%`, backgroundColor: cat.color }}
-                />
-              </div>
-            </div>
-          )
-        })}
+                  const percentage = totalPengeluaran > 0 ? Math.round((amount / totalPengeluaran) * 100) : 0
+                  
+                  return (
+                      <div key={cat.name}>
+                          <div className="flex justify-between text-xs mb-1 font-medium">
+                              <span className="text-slate-700">{cat.name}</span>
+                              <span className="text-slate-500">{percentage}%</span>
+                          </div>
+                          <div className="w-full bg-[#EFECE3] h-2 rounded-full overflow-hidden">
+                              <div 
+                                  className="h-full rounded-full transition-all duration-1000 ease-out" 
+                                  style={{ width: `${percentage}%`, backgroundColor: cat.color }} 
+                              />
+                          </div>
+                      </div>
+                  )
+              })}
+          </div>
       </div>
+
     </div>
   )
 }
