@@ -9,78 +9,87 @@ import {
   Menu, X, Shield 
 } from 'lucide-react'
 
-// PENTING: Prop isAdmin dikembalikan
-export default function Sidebar({ isAdmin = false }: { isAdmin?: boolean }) {
+// Tambahkan userTier dan userEmail ke props
+export default function Sidebar({ 
+  isAdmin = false, 
+  userTier = 1,
+  userEmail = ''
+}: { 
+  isAdmin?: boolean,
+  userTier?: number,
+  userEmail?: string
+}) {
   const [isOpen, setIsOpen] = useState(false)
   const pathname = usePathname()
 
-  // Helper untuk mengecek apakah path aktif
   const isActive = (path: string) => {
-    if (path === '/dashboard') return pathname === '/dashboard' // Exact match untuk dasbor
-    return pathname?.includes(path) // Includes untuk sub-menu
+    if (path === '/dashboard') return pathname === '/dashboard'
+    return pathname?.includes(path)
   }
 
-  // ==========================================
-  // PEMBARUAN: Warna Aktif diganti ke Earth Tone
-  // ==========================================
   const getMenuClasses = (path: string) => {
     return `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
       isActive(path)
-        // Menggunakan gradasi hijau alam (Sage to Olive)
         ? 'bg-gradient-to-r from-[#4A5D4E] to-[#3d4d40] text-white shadow-md shadow-[#4A5D4E]/20' 
-        : 'text-slate-600 hover:bg-slate-50'
+        : 'text-[#4B5563] hover:bg-[#EFECE3] hover:text-[#1F2937]'
     }`
   }
 
   const getIconClasses = (path: string) => {
-    return isActive(path) ? 'text-white' : 'text-slate-400'
+    return isActive(path) ? 'text-white' : 'text-[#8C7A6B]'
+  }
+
+  // Helper untuk merender menu yang terkunci (Premium)
+  const renderLockedMenu = (title: string, IconComponent: any, requiredTier: number) => {
+    const isLocked = userTier < requiredTier
+    
+    if (isLocked) {
+      return (
+        <div 
+          onClick={() => alert(`Fitur ${title} hanya tersedia untuk Tier ${requiredTier}. Silakan upgrade di halaman profil.`)}
+          className="flex items-center justify-between px-3 py-2.5 text-sm text-slate-400 cursor-pointer font-medium hover:bg-slate-50 rounded-xl transition-all"
+        >
+          <div className="flex items-center gap-3"><IconComponent size={18} /> <span className="truncate">{title}</span></div>
+          <Lock size={14} className="text-slate-300 shrink-0" />
+        </div>
+      )
+    }
+
+    // Jika sudah terbuka (tidak terkunci), buat jadi link/tombol normal
+    return (
+      <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-[#4B5563] hover:bg-[#EFECE3] hover:text-[#1F2937]">
+        <IconComponent size={18} className="text-[#8C7A6B]" /> <span className="truncate">{title}</span>
+      </button>
+    )
   }
 
   return (
     <>
-      {/* ========================================= */}
-      {/* HEADER MOBILE (Hanya tampil di HP)        */}
-      {/* ========================================= */}
       <div className="md:hidden fixed top-0 left-0 w-full h-16 bg-[#FDFCF8] border-b border-[#EFECE3] z-50 flex items-center justify-between px-4 shadow-sm">
         <div className="flex items-center">
           <Zap className="text-[#4A5D4E] fill-[#4A5D4E] mr-2" size={24} />
           <h1 className="text-xl font-serif font-bold text-[#1F2937] tracking-tight">PastiBertumbuh</h1>
         </div>
-        <button 
-          onClick={() => setIsOpen(!isOpen)} 
-          className="p-2 bg-slate-100 rounded-lg text-slate-600 hover:bg-slate-200 transition-colors"
-        >
+        <button onClick={() => setIsOpen(!isOpen)} className="p-2 bg-[#EFECE3] rounded-lg text-[#4B5563]">
           {isOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
 
-      {/* OVERLAY MOBILE */}
-      {isOpen && (
-        <div 
-          className="md:hidden fixed inset-0 bg-slate-900/50 z-40"
-          onClick={() => setIsOpen(false)}
-        />
-      )}
+      {isOpen && <div className="md:hidden fixed inset-0 bg-slate-900/40 z-40 backdrop-blur-sm" onClick={() => setIsOpen(false)} />}
 
-      {/* ========================================= */}
-      {/* SIDEBAR UTAMA (Fixed Full Layar)          */}
-      {/* ========================================= */}
       <aside className={`fixed top-0 left-0 h-screen w-64 bg-[#FDFCF8] border-r border-[#EFECE3] z-50 flex flex-col transform transition-transform duration-300 ease-in-out ${
         isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
       }`}>
         
-        {/* LOGO ZAP ASLI */}
-        <div className="hidden md:flex h-16 items-center px-6 border-b border-transparent shrink-0 mt-2">
+        <div className="hidden md:flex h-20 items-center px-6 border-b border-[#EFECE3] shrink-0">
           <Zap className="text-[#4A5D4E] fill-[#4A5D4E] mr-2" size={24} />
           <span className="text-xl font-serif font-bold text-[#1F2937] tracking-tight">PastiBertumbuh</span>
         </div>
 
-        {/* AREA SCROLL MENU */}
-        <div className="flex-1 overflow-y-auto py-4 px-3 space-y-6 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto py-6 px-3 space-y-8 custom-scrollbar">
           
-          {/* TIER 1: PRODUKTIVITAS & KEUANGAN */}
           <div>
-            <p className="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Produktivitas & Keuangan</p>
+            <p className="px-3 text-[10px] font-bold text-[#9CA3AF] uppercase tracking-wider mb-3">Produktivitas & Keuangan</p>
             <nav className="space-y-1">
               <Link href="/dashboard"><div className={getMenuClasses('/dashboard')}><LayoutDashboard size={18} className={getIconClasses('/dashboard')} /> Dasbor</div></Link>
               <Link href="/dashboard/tasks"><div className={getMenuClasses('/dashboard/tasks')}><CheckSquare size={18} className={getIconClasses('/dashboard/tasks')} /> Daftar Tugas</div></Link>
@@ -91,57 +100,39 @@ export default function Sidebar({ isAdmin = false }: { isAdmin?: boolean }) {
             </nav>
           </div>
 
-          {/* TIER 2: AUTOMASI PRO */}
           <div>
-            <div className="px-3 flex items-center justify-between mb-2">
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Automasi Pro</p>
-              {/* Badge warna Earth Tone */}
+            <div className="px-3 flex items-center justify-between mb-3">
+              <p className="text-[10px] font-bold text-[#9CA3AF] uppercase tracking-wider">Automasi Pro</p>
               <span className="bg-[#EFECE3] text-[#8C7A6B] text-[9px] font-bold px-2 py-0.5 rounded-full border border-[#d6d0c4]">29K</span>
             </div>
             <nav className="space-y-1">
               <Link href="/dashboard/pengingat"><div className={getMenuClasses('/dashboard/pengingat')}><Bell size={18} className={getIconClasses('/dashboard/pengingat')} /> Pengingat Harian</div></Link>
-              <button className="w-full">
-                <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-600 hover:bg-slate-50">
-                  <Download size={18} className="text-slate-400" /> Unduh Lapkue
-                </div>
-              </button>
+              {renderLockedMenu("Unduh Lapkue", Download, 2)}
             </nav>
           </div>
 
-          {/* TIER 3: PREMIUM AI */}
           <div>
-            <div className="px-3 flex items-center justify-between mb-2">
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Premium AI</p>
-               {/* Badge warna Earth Tone */}
+            <div className="px-3 flex items-center justify-between mb-3">
+              <p className="text-[10px] font-bold text-[#9CA3AF] uppercase tracking-wider">Premium AI</p>
               <span className="bg-[#EFECE3] text-[#4A5D4E] text-[9px] font-bold px-2 py-0.5 rounded-full border border-[#d6d0c4]">59K</span>
             </div>
             <nav className="space-y-1">
-              <div className="flex items-center justify-between px-3 py-2.5 text-sm text-slate-400 cursor-not-allowed font-medium">
-                <div className="flex items-center gap-3"><ShieldCheck size={18} /> Audit Mingguan</div>
-                <Lock size={14} className="text-slate-300" />
-              </div>
-              <div className="flex items-center justify-between px-3 py-2.5 text-sm text-slate-400 cursor-not-allowed font-medium">
-                <div className="flex items-center gap-3"><ScanFace size={18} /> Scan Struk & VN</div>
-                <Lock size={14} className="text-slate-300" />
-              </div>
-              <div className="flex items-center justify-between px-3 py-2.5 text-sm text-slate-400 cursor-not-allowed font-medium">
-                <div className="flex items-center gap-3"><Mail size={18} /> Invoice Gmail</div>
-                <Lock size={14} className="text-slate-300" />
-              </div>
+              {renderLockedMenu("Audit Mingguan", ShieldCheck, 3)}
+              {renderLockedMenu("Scan Struk & VN", ScanFace, 3)}
+              {renderLockedMenu("Invoice Gmail", Mail, 3)}
             </nav>
           </div>
 
-          {/* MENU KHUSUS ADMIN (Sesuai kode aslimu) */}
           {isAdmin && (
             <div className="pt-4 border-t border-[#EFECE3]">
-              <p className="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Manajemen SaaS</p>
+              <p className="px-3 text-[10px] font-bold text-[#9CA3AF] uppercase tracking-wider mb-2">Manajemen SaaS</p>
               <Link href="/dashboard/admin">
                 <div className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
                   pathname === '/dashboard/admin'
                     ? 'bg-[#1F2937] text-white shadow-md' 
-                    : 'text-slate-600 hover:bg-slate-50'
+                    : 'text-[#4B5563] hover:bg-[#EFECE3]'
                 }`}>
-                  <Shield size={18} className={pathname === '/dashboard/admin' ? 'text-white' : 'text-slate-400'} />
+                  <Shield size={18} className={pathname === '/dashboard/admin' ? 'text-white' : 'text-[#8C7A6B]'} />
                   Admin Panel
                 </div>
               </Link>
@@ -149,18 +140,17 @@ export default function Sidebar({ isAdmin = false }: { isAdmin?: boolean }) {
           )}
         </div>
 
-        {/* BOTTOM AREA (User Profile / Chat Assistant) */}
-        <div className="p-4 border-t border-[#EFECE3] bg-[#FDFCF8] shrink-0">
-          <div className="flex items-center gap-3 hover:bg-[#EFECE3] p-2 rounded-xl cursor-pointer transition-colors">
+        <Link href="/dashboard/profile" className="block p-4 border-t border-[#EFECE3] bg-[#FDFCF8] shrink-0 hover:bg-[#EFECE3] transition-colors">
+          <div className="flex items-center gap-3 p-2 rounded-xl cursor-pointer">
             <div className="w-10 h-10 rounded-full bg-[#8C7A6B] text-white flex items-center justify-center font-bold text-sm shrink-0">
-              N
+              {userEmail ? userEmail.charAt(0).toUpperCase() : 'U'}
             </div>
             <div className="overflow-hidden">
-              <p className="text-sm font-bold text-[#1F2937] truncate">nasg1868@...</p>
-              <p className="text-[11px] text-[#6B7280] font-medium">Manajemen SaaS</p>
+              <p className="text-sm font-bold text-[#1F2937] truncate">{userEmail || 'Pengguna'}</p>
+              <p className="text-[11px] text-[#4A5D4E] font-bold mt-0.5">Tier {userTier} Aktif</p>
             </div>
           </div>
-        </div>
+        </Link>
         
       </aside>
     </>
