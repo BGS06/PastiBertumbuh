@@ -14,6 +14,11 @@ const TIERS = [
 export default function RegisterPage() {
   const [selectedTier, setSelectedTier] = useState('1')
 
+  // Membungkus Server Action untuk menyelesaikan error TS yang tidak menerima pengembalian obyek
+  const handleSignup = async (formData: FormData) => {
+    await signup(formData);
+  }
+
   return (
     <div className="min-h-screen bg-[#FDFCF8] flex items-center justify-center p-4 py-12">
       <div className="w-full max-w-lg bg-white rounded-3xl p-8 md:p-12 shadow-sm border border-[#EFECE3]">
@@ -84,7 +89,7 @@ export default function RegisterPage() {
             />
           </div>
           <button 
-            formAction={signup} 
+            formAction={handleSignup} 
             className="w-full bg-[#8C7A6B] hover:bg-[#7a6a5c] text-white py-3.5 rounded-xl font-medium transition-colors shadow-sm mt-4"
           >
             Lanjutkan Pendaftaran

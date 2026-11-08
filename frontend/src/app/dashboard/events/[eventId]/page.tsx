@@ -7,9 +7,13 @@ import Link from 'next/link'
 import { ArrowLeft, CalendarDays, MapPin } from 'lucide-react'
 import CopyLinkButton from './CopyLinkButton'
 
-export default async function EventDetailPage({ params }: { params: { eventId: string } }) {
-  // Ambil data dari Supabase
-  const event = await getEventById(params.eventId)
+export default async function EventPage({ params }: { params: Promise<{ eventId: string }> }) {
+  // NEXT.js 15+: Await params terlebih dahulu
+  const resolvedParams = await params;
+  const eventId = resolvedParams.eventId;
+  
+  // Ambil data event
+  const event = await getEventById(eventId);
   
   // Penanganan Error: Jika acara tidak ada atau bukan milik user
   if (!event) {
@@ -24,10 +28,13 @@ export default async function EventDetailPage({ params }: { params: { eventId: s
     )
   }
 
-  const guests = await getGuests(params.eventId)
+  const guests = await getGuests(eventId)
   
-  // Bind eventId ke dalam fungsi addGuest agar form langsung mengenali ID acarnya
-  const addGuestAction = addGuest.bind(null, params.eventId)
+  // Wrapper Server Action yang mengembalikan tipe void untuk menghindari error form
+  const handleAddGuest = async (formData: FormData) => {
+    "use server";
+    await addGuest(eventId, formData);
+  }
 
   return (
     <div className="p-8 max-w-6xl mx-auto space-y-8">
@@ -53,7 +60,7 @@ export default async function EventDetailPage({ params }: { params: { eventId: s
               <CardDescription>Masukkan data tamu untuk membuat link undangan khusus.</CardDescription>
             </CardHeader>
             <CardContent>
-              <form action={addGuestAction} className="space-y-4">
+              <form action={handleAddGuest} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="name">Nama Lengkap Tamu</Label>
                   <Input id="name" name="name" placeholder="Misal: Budi Santoso" required />

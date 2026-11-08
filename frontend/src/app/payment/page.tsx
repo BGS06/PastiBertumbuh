@@ -1,9 +1,15 @@
 import Link from 'next/link'
 import { Wallet, CheckCircle2, ArrowRight, ShieldCheck, Copy } from 'lucide-react'
 
-export default function PaymentPage({ searchParams }: { searchParams: { tier?: string, email?: string } }) {
-  const tier = searchParams.tier || '2'
-  const email = searchParams.email || 'Pengguna Baru'
+// Sesuaikan tipe Promise untuk Next.js 15+
+export default async function PaymentPage({ 
+  searchParams 
+}: { 
+  searchParams: Promise<{ tier?: string, email?: string }> 
+}) {
+  const resolvedParams = await searchParams;
+  const tier = resolvedParams.tier || '2'
+  const email = resolvedParams.email || 'Pengguna Baru'
   
   const tierDetails = {
     '2': { name: 'Tier 2 (Pro)', price: 'Rp 29.000' },

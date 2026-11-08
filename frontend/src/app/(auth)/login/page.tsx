@@ -3,6 +3,14 @@ import { login } from '../actions'
 import { ArrowLeft, BookOpen } from 'lucide-react'
 
 export default function LoginPage() {
+
+  // Membungkus Server Action agar mereturn void (mengabaikan object error)
+  // Ini menyelesaikan TS Error tanpa perlu merombak jadi Client Component
+  const handleLogin = async (formData: FormData) => {
+    "use server";
+    await login(formData);
+  }
+
   return (
     <div className="min-h-screen bg-[#FDFCF8] flex items-center justify-center p-4">
       <div className="w-full max-w-md bg-white rounded-3xl p-8 md:p-12 shadow-sm border border-[#EFECE3]">
@@ -44,7 +52,7 @@ export default function LoginPage() {
             />
           </div>
           <button 
-            formAction={login} 
+            formAction={handleLogin} 
             className="w-full bg-[#4A5D4E] hover:bg-[#3d4d40] text-white py-3.5 rounded-xl font-medium transition-colors shadow-sm mt-4"
           >
             Masuk
